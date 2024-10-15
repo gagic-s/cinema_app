@@ -5,7 +5,7 @@ const pool = new Pool({
   host: "localhost",
   database: "cinema",
   password: "duleGagic2510@",
-  port: "5432",
+  port: 5432,
 });
 
 export default pool;

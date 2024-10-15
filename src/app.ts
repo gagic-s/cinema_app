@@ -1,11 +1,11 @@
-import express from "express";
-import routes from "./routes/genres.js";
+import express, { Express } from "express";
+import router from "./routes/genres.js";
 import connectingToPostgres from "./sequelize.js";
 
-const app = express();
+const app: Express = express();
 app.use(express.json());
 
-app.use("/api/v1/genres", routes);
+app.use("/api/v1/genres", router);
 
 connectingToPostgres();
 

@@ -1,21 +1,22 @@
 import pool from "../db.js";
 import generateId from "../utils.js";
+import { Request, Response } from "express";
 
 // get all genres
-const getGenres = (req, res) => {
-  pool.query("SELECT * FROM genres", (err, results) => {
+const getGenres = (req: Request, res: Response) => {
+  pool.query("SELECT * FROM genres", (err: any, results) => {
     if (err) throw err;
     res.status(200).json(results.rows);
   });
 };
 
 //get single genre
-const getGenreById = (req, res) => {
+const getGenreById = (req: Request, res: Response) => {
   const id = req.params.id;
   pool.query(
     "SELECT * FROM genres WHERE genre_id = $1",
     [id],
-    (err, results) => {
+    (err: any, results: any) => {
       if (err) throw err;
 
       res.status(200).json(results.rows);
@@ -24,14 +25,14 @@ const getGenreById = (req, res) => {
 };
 
 // add genre
-const addGenre = (req, res) => {
+const addGenre = (req: Request, res: Response) => {
   const { genrename } = req.body;
 
   //check if name exists
   pool.query(
     "SELECT * FROM genres WHERE genrename = $1",
     [genrename],
-    (err, results) => {
+    (err: any, results: any) => {
       if (results.rows.length) {
         return res.send("Genre name already exist");
       }
@@ -41,7 +42,7 @@ const addGenre = (req, res) => {
       pool.query(
         "INSERT INTO genres (genre_id, genrename) VALUES ($1, $2)",
         [newGenreId, genrename],
-        (err, results) => {
+        (err: any, results: any) => {
           if (err) throw err;
 
           res.status(201).send("Genre successfully created");
@@ -52,14 +53,14 @@ const addGenre = (req, res) => {
 };
 
 // delete genre
-const deleteGenre = (req, res) => {
+const deleteGenre = (req: Request, res: Response) => {
   const id = req.params.id;
 
   //check if name exists
   pool.query(
     "SELECT * FROM genres WHERE genre_id = $1",
     [id],
-    (err, results) => {
+    (err: any, results: any) => {
       if (!results.rows.length) {
         return res.send("Genre not found");
       }
@@ -67,7 +68,7 @@ const deleteGenre = (req, res) => {
       pool.query(
         "DELETE FROM genres WHERE genre_id = $1",
         [id],
-        (err, results) => {
+        (err: any, results: any) => {
           if (err) throw err;
           res.status(200).send("Genre successfully deleted");
         }
@@ -76,7 +77,7 @@ const deleteGenre = (req, res) => {
   );
 };
 
-const updateGenre = (req, res) => {
+const updateGenre = (req: Request, res: Response) => {
   const id = req.params.id;
   const newGenreName = req.body.genrename;
 
@@ -84,7 +85,7 @@ const updateGenre = (req, res) => {
   pool.query(
     "SELECT * FROM genres WHERE genre_id = $1",
     [id],
-    (err, results) => {
+    (err: any, results: any) => {
       if (!results.rows.length) {
         return res.send("Genre not found");
       }
@@ -92,7 +93,7 @@ const updateGenre = (req, res) => {
       pool.query(
         "UPDATE genres SET genrename = $1 WHERE genre_id = $2",
         [newGenreName, id],
-        (err, results) => {
+        (err: any, results: any) => {
           if (err) throw err;
           res.status(200).send("Genre successfully updated");
         }

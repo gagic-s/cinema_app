@@ -2,16 +2,23 @@
   "name": "cinema_app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/server",
-    "dev": "node --watch src/server"
+    "dev": "nodemon"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "pg": "^8.13.0",
+    "sequelize": "^6.37.4"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.7.5",
+    "@types/pg-pool": "^2.0.6",
     "express": "^4.21.1",
-    "pg": "^8.13.0"
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
   }
 }
