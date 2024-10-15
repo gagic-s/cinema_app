@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize')
+import Sequelize from "sequelize";
 
 // returns undefined??
 // function connectingToPostgres(){
@@ -11,20 +11,20 @@ const Sequelize = require('sequelize')
 //      }
 // }
 const sequelize = new Sequelize(
-    'postgres://postgres:duleGagic2510@@localhost:5432/cinema'
-)
+  "postgres://postgres:duleGagic2510@@localhost:5432/cinema"
+);
 
 // returns an object
 function connectingToPostgres() {
-    sequelize
-        .authenticate()
-        .then(() => {
-            console.log('Connection has been established successfully.')
-        })
-        .catch((error) => {
-            console.error('Unable to connect to the database:', error)
-        })
-    return sequelize
+  sequelize
+    .authenticate()
+    .then(() => {
+      console.log("Connection has been established successfully.");
+    })
+    .catch((error) => {
+      console.error("Unable to connect to the database:", error);
+    });
+  return sequelize;
 }
 
-module.exports = connectingToPostgres
+export default connectingToPostgres;

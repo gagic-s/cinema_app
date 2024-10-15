@@ -1,5 +1,5 @@
-const crypto = require('crypto')
+import crypto from "crypto";
 
-const generateId = () => crypto.randomUUID()
+const generateId = () => crypto.randomUUID();
 
-module.exports = generateId
+export default generateId;

@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node server",
-    "dev": "node --watch server"
+    "start": "node src/server",
+    "dev": "node --watch src/server"
   },
   "author": "",
   "license": "ISC",
