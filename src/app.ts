@@ -1,12 +1,18 @@
-import express, { Express } from "express";
-import router from "./routes/genres.js";
-import connectingToPostgres from "./sequelize.js";
+import express, { Application } from "express";
+import Server from "./index.js";
 
-const app: Express = express();
-app.use(express.json());
+const app: Application = express();
+const server: Server = new Server(app);
+const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 8000;
 
-app.use("/api/v1/genres", router);
-
-connectingToPostgres();
-
-app.listen(8000, () => console.log("Server is running on port 8000"));
+app
+  .listen(PORT, "localhost", function () {
+    console.log(`Server is running on port ${PORT}.`);
+  })
+  .on("error", (err: any) => {
+    if (err.code === "EADDRINUSE") {
+      console.log("Error: address already in use");
+    } else {
+      console.log(err);
+    }
+  });
