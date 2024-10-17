@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import Genre from "../models/genre.model.js";
 import genreRepository from "../repositories/genre.repository.js";
 import { Request, Response } from "express";
@@ -38,8 +39,8 @@ export default class GenreController {
   }
 
   async findOne(req: Request, res: Response) {
-    const id: number = parseInt(req.params.id);
-
+    const id: UUID = req.params.id as UUID;
+    //URADITI VALIDACIJU
     try {
       const genre = await genreRepository.retrieveById(id);
 
@@ -57,7 +58,7 @@ export default class GenreController {
 
   async update(req: Request, res: Response) {
     let genre: Genre = req.body;
-    genre.id = parseInt(req.params.id);
+    genre.id = req.params.id as UUID;
 
     try {
       const num = await genreRepository.update(genre);
@@ -79,7 +80,7 @@ export default class GenreController {
   }
 
   async delete(req: Request, res: Response) {
-    const id: number = parseInt(req.params.id);
+    const id: UUID = req.params.id as UUID;
 
     try {
       const num = await genreRepository.delete(id);

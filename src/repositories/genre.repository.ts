@@ -1,12 +1,13 @@
 import { Op } from "sequelize";
 import Genre from "../models/genre.model.js";
+import { UUID } from "crypto";
 
 interface IGenreRepository {
   save(genre: Genre): Promise<Genre>;
   retrieveAll(searchParams: { name: string }): Promise<Genre[]>;
-  retrieveById(genreId: number): Promise<Genre | null>;
+  retrieveById(genreId: UUID): Promise<Genre | null>;
   update(genre: Genre): Promise<number>;
-  delete(genreId: number): Promise<number>;
+  delete(genreId: UUID): Promise<number>;
 }
 
 interface SearchCondition {
@@ -36,7 +37,7 @@ class GenreRepository implements IGenreRepository {
     }
   }
 
-  async retrieveById(genreId: number): Promise<Genre | null> {
+  async retrieveById(genreId: UUID): Promise<Genre | null> {
     try {
       return await Genre.findByPk(genreId);
     } catch (error) {
@@ -56,7 +57,7 @@ class GenreRepository implements IGenreRepository {
     }
   }
 
-  async delete(genreId: number): Promise<number> {
+  async delete(genreId: UUID): Promise<number> {
     try {
       const affectedRows = await Genre.destroy({
         where: { id: genreId },

@@ -1,20 +1,22 @@
+import { UUID } from "crypto";
 import { Model, Table, Column, DataType } from "sequelize-typescript";
 
 @Table({
-  tableName: "genre_test",
+  tableName: "genre",
 })
 export default class Genre extends Model {
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.UUID,
     primaryKey: true,
-    autoIncrement: true,
     field: "id",
+    defaultValue: DataType.UUIDV4,
   })
-  id?: number;
+  id?: UUID;
 
   @Column({
     type: DataType.STRING(55),
     field: "name",
+    unique: true,
   })
   name?: string;
 }
