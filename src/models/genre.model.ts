@@ -2,7 +2,7 @@ import { UUID } from "crypto";
 import { Model, Table, Column, DataType } from "sequelize-typescript";
 
 @Table({
-  tableName: "genre",
+  tableName: "genres",
 })
 export default class Genre extends Model {
   @Column({
