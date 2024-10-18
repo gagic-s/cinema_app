@@ -6,17 +6,17 @@ class GenreRoutes {
   controller = new GenreController();
 
   constructor() {
-    this.intializeRoutes();
+    this.initializeRoutes();
   }
 
-  intializeRoutes() {
+  initializeRoutes() {
     // Create a new Genre
     this.router.post("/", this.controller.create);
     // Retrieve all Genre
     this.router.get("/", this.controller.findAll);
-    // Retrieve a single Zanr with id
+    // Retrieve a single Genre with id
     this.router.get("/:id", this.controller.findOne);
-    // Update a Zanr with id
+    // Update a Genre with id
     this.router.put("/:id", this.controller.update);
     // Delete a Genre with id
     this.router.delete("/:id", this.controller.delete);
