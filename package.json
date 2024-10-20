@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cloudinary": "^2.5.1",
     "pg": "^8.13.0",
     "reflect-metadata": "^0.2.2",
     "sequelize": "^6.37.4",

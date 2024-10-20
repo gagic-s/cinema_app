@@ -1,6 +1,8 @@
 import { Sequelize } from "sequelize-typescript";
 import { config, dialect } from "../config/db.config.js";
 import Genre from "../models/genre.model.js";
+import Movie from "../models/movie.model.js";
+import MovieGenre from "../models/movieGenre.model.js";
 
 class Database {
   public sequelize: Sequelize | undefined;
@@ -22,7 +24,7 @@ class Database {
         acquire: config.pool.acquire,
         idle: config.pool.idle,
       },
-      models: [Genre],
+      models: [Genre, Movie, MovieGenre],
     });
 
     await this.sequelize

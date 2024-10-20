@@ -2,6 +2,7 @@ import { UUID } from "crypto";
 import Genre from "../models/genre.model.js";
 import genreRepository from "../repositories/genre.repository.js";
 import { Request, Response } from "express";
+import GenreMapper from "../mappers/genre.mapper.js";
 
 interface IGenreService {
   addGenre(req: Request, res: Response): Promise<Genre>;
@@ -24,8 +25,8 @@ class GenreService implements IGenreService {
       const genre: Genre = req.body;
 
       const savedGenre = await genreRepository.save(genre);
-
-      res.status(201).send(savedGenre);
+      const genreDto = GenreMapper.toGenreDTO(savedGenre);
+      res.status(201).send(genreDto);
     } catch (err) {
       res.status(500).send({
         message: "Some error occurred while retrieving genres.",

@@ -1,26 +1,26 @@
 import { Router } from "express";
-import GenreController from "../controllers/genres.controller.js";
+import MovieController from "../controllers/movie.controller.js";
 
-class GenreRoutes {
+class MovieRoutes {
   router = Router();
-  controller = new GenreController();
+  controller = new MovieController();
 
   constructor() {
     this.initializeRoutes();
   }
 
   initializeRoutes() {
-    // Create a new Genre
+    // Create a new Movie
     this.router.post("/", this.controller.create);
-    // Retrieve all Genre
+    // Retrieve all Movies
     this.router.get("/", this.controller.findAll);
-    // Retrieve a single Genre with id
+    // Retrieve a single Movie with id
     this.router.get("/:id", this.controller.findOne);
-    // Update a Genre with id
+    // Update a Movie with id
     this.router.put("/:id", this.controller.update);
-    // Delete a Genre with id
+    // Delete a Movie with id
     this.router.delete("/:id", this.controller.delete);
   }
 }
 
-export default new GenreRoutes().router;
+export default new MovieRoutes().router;

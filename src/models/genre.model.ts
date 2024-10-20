@@ -1,5 +1,14 @@
 import { UUID } from "crypto";
-import { Model, Table, Column, DataType } from "sequelize-typescript";
+import {
+  Model,
+  Table,
+  Column,
+  DataType,
+  ForeignKey,
+  BelongsToMany,
+} from "sequelize-typescript";
+import Movie from "./movie.model.js";
+import MovieGenre from "./movieGenre.model.js";
 
 @Table({
   tableName: "genres",
@@ -8,10 +17,10 @@ export default class Genre extends Model {
   @Column({
     type: DataType.UUID,
     primaryKey: true,
-    field: "id",
+    field: "genre_id",
     defaultValue: DataType.UUIDV4,
   })
-  id?: UUID;
+  genre_id?: UUID;
 
   @Column({
     type: DataType.STRING(55),
@@ -19,4 +28,7 @@ export default class Genre extends Model {
     unique: true,
   })
   name?: string;
+
+  @BelongsToMany(() => Movie, () => MovieGenre)
+  genres!: Movie[];
 }
