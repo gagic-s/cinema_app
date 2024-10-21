@@ -1,14 +1,5 @@
 import { UUID } from "crypto";
-import {
-  Model,
-  Table,
-  Column,
-  DataType,
-  ForeignKey,
-  BelongsToMany,
-} from "sequelize-typescript";
-import Movie from "./movie.model.js";
-import MovieGenre from "./movieGenre.model.js";
+import { Model, Table, Column, DataType } from "sequelize-typescript";
 
 @Table({
   tableName: "genres",
@@ -28,7 +19,4 @@ export default class Genre extends Model {
     unique: true,
   })
   name?: string;
-
-  @BelongsToMany(() => Movie, () => MovieGenre)
-  genres!: Movie[];
 }
