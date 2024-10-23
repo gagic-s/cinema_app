@@ -1,9 +1,20 @@
 import { Op } from "sequelize";
-import Movie from "../models/movie.model.js";
 import { UUID } from "crypto";
+import { Genre, Movie } from "../db/index.js";
 
 interface IMovieRepository {
-  save(movie: Movie): Promise<Movie>;
+  save({
+    name,
+    originalName,
+    posterImage,
+    duration,
+  }: {
+    name: string;
+    originalName: string;
+    posterImage: string;
+    duration: number;
+  }): Promise<Movie>;
+  addGenresToMovie(movie: Movie, genres: Genre[]): Promise<void>;
   retrieveAll(searchParams: { name: string }): Promise<Movie[]>;
   retrieveById(movieId: UUID): Promise<Movie | null>;
   update(movie: Movie): Promise<number>;
@@ -15,18 +26,39 @@ interface SearchCondition {
 }
 
 class MovieRepository implements IMovieRepository {
-  async save(movie: Movie): Promise<Movie> {
+  async save({
+    name,
+    originalName,
+    posterImage,
+    duration,
+  }: {
+    name: string;
+    originalName: string;
+    posterImage: string;
+    duration: number;
+  }): Promise<Movie> {
     try {
       return await Movie.create({
-        name: movie.name,
-        originalName: movie.originalName,
-        duration: movie.duration,
-        posterImage: movie.posterImage,
+        name: name,
+        originalName: originalName,
+        posterImage: posterImage,
+        duration: duration,
       });
     } catch (err) {
-      throw new Error("Failed to create Genre!");
+      throw new Error("Failed to create Movie!");
     }
   }
+
+  async addGenresToMovie(movie: Movie, genres: Genre[]): Promise<void> {
+    try {
+      // add the association in the movieGenres table
+      // if I put movie.addGenres it shows addGenres doesn't exist on Movie WHY?
+      return await (movie as any).addGenres(genres);
+    } catch (error) {
+      throw new Error("Failed to add Genres!");
+    }
+  }
+
   async retrieveAll(searchParams: { name?: string }): Promise<Movie[]> {
     try {
       let condition: SearchCondition = {};

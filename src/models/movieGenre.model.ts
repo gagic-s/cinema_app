@@ -9,14 +9,15 @@ import { Genre, Movie } from "../db/index.js";
 import { UUID } from "crypto";
 
 @Table({
-  tableName: "movieGenres",
+  tableName: "movie_genres",
+  timestamps: false,
 })
 export default class MovieGenre extends Model {
   @ForeignKey(() => Movie)
   @Column({
     type: DataType.UUID,
     primaryKey: true,
-    field: "movie_id",
+    unique: false,
   })
   movie_id!: UUID;
 
@@ -24,7 +25,7 @@ export default class MovieGenre extends Model {
   @Column({
     type: DataType.UUID,
     primaryKey: true,
-    field: "genre_id",
+    unique: false,
   })
   genre_id!: UUID;
 }

@@ -4,7 +4,7 @@ import MovieService from "../services/movie.service.js";
 export default class MovieController {
   create(req: Request, res: Response) {
     try {
-      MovieService.addMovie(req, res);
+      MovieService.addMovieWithGenres(req, res);
     } catch (error) {}
   }
 

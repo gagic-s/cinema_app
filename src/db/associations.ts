@@ -10,8 +10,16 @@ export function defineAssociations() {
   Movie.hasMany(Screening, { foreignKey: "movie_id" });
   Screening.belongsTo(Movie, { foreignKey: "movie_id" });
 
-  Movie.belongsToMany(Genre, { through: MovieGenre });
-  Genre.belongsToMany(Movie, { through: MovieGenre });
+  Movie.belongsToMany(Genre, {
+    through: MovieGenre,
+    foreignKey: "movie_id",
+    otherKey: "genre_id",
+  });
+  Genre.belongsToMany(Movie, {
+    through: MovieGenre,
+    foreignKey: "genre_id",
+    otherKey: "movie_id",
+  });
 
   Screening.hasMany(Reservation, { foreignKey: "screening_id" });
   Reservation.belongsTo(Screening, { foreignKey: "screening_id" });

@@ -1,10 +1,10 @@
 import { UUID } from "crypto";
-import Movie from "../models/movie.model.js";
 import movieRepository from "../repositories/movie.repository.js";
 import { Request, Response } from "express";
+import { Genre, Movie } from "../db/index.js";
 
 interface IMovieService {
-  addMovie(req: Request, res: Response): Promise<Movie>;
+  addMovieWithGenres(req: Request, res: Response): Promise<Response>;
   getAllMovies(req: Request, res: Response): Promise<Movie[]>;
   getOneMovie(req: Request, res: Response): Promise<Movie>;
   updateMovie(req: Request, res: Response): Promise<Movie>;
@@ -12,22 +12,66 @@ interface IMovieService {
 }
 
 class MovieService implements IMovieService {
-  async addMovie(req: Request, res: Response): Promise<any> {
-    if (!req.body.name) {
-      res.status(400).send({
-        message: "Content can not be empty!",
+  async addMovieWithGenres(req: Request, res: Response): Promise<Response> {
+    const {
+      name,
+      originalName,
+      posterImage,
+      duration,
+      genreNames,
+    }: {
+      name: string;
+      originalName: string;
+      posterImage: string;
+      duration: number;
+      genreNames: string[];
+    } = req.body;
+
+    // check if genreNames is not empty and is an array
+    if (!Array.isArray(genreNames) || genreNames.length === 0) {
+      return res.status(400).send({
+        //shows the same error message if its not an array, maybe there should be another validation !Array.isArray(genreNames => create an array with the value that was sent as the first value of the array
+        message: "You must provide at least one genre to create a movie.",
       });
-      return;
     }
-
     try {
-      const genre: Movie = req.body;
+      // create the movie first
+      const movie = await movieRepository.save({
+        name,
+        originalName,
+        posterImage,
+        duration,
+      });
 
-      const savedGenre = await movieRepository.save(genre);
+      //create genre array
+      const genres: Genre[] = [];
+      for (const genreName of genreNames) {
+        // find the genre by name
+        let genre = await Genre.findOne({ where: { name: genreName } });
 
-      res.status(201).send(savedGenre);
+        // if genre doesn't exist, create it
+        if (!genre) {
+          genre = await Genre.create({ name: genreName });
+          console.log(`CREATED NEW GENRE: ${genreName}`);
+        }
+
+        // push genre to genres array
+        genres.push(genre);
+      }
+
+      console.log(
+        `ALL GENRES: ${genres.map((g) => g.name)}\n ${genres.map(
+          (g) => g.genre_id
+        )}\n`
+      );
+
+      // associate the genres with the movie
+      await movieRepository.addGenresToMovie(movie, genres);
+
+      //return movie
+      return res.status(201).send(movie);
     } catch (err) {
-      res.status(500).send({
+      return res.status(500).send({
         message: "Some error occurred while retrieving movies.",
       });
     }
