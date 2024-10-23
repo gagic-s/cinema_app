@@ -1,6 +1,8 @@
 import { Op } from "sequelize";
 import { UUID } from "crypto";
 import { Genre, Movie } from "../db/index.js";
+import { NotFoundException } from "../exceptions/NotFoundException.js";
+import { DatabaseException } from "../exceptions/DatabaseException.js";
 
 interface IMovieRepository {
   save({
@@ -74,9 +76,13 @@ class MovieRepository implements IMovieRepository {
 
   async retrieveById(movieId: UUID): Promise<Movie | null> {
     try {
-      return await Movie.findByPk(movieId);
-    } catch (error) {
-      throw new Error("Failed to retrieve Genres!");
+      const movie = await Movie.findByPk(movieId);
+      if (!movie) {
+        throw new NotFoundException("Movie");
+      }
+      return movie;
+    } catch (error: any) {
+      throw new DatabaseException(error.message);
     }
   }
 

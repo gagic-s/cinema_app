@@ -3,6 +3,7 @@ import movieRepository from "../repositories/movie.repository.js";
 import { Request, Response } from "express";
 import { Genre, Movie } from "../db/index.js";
 import { validate as uuidValidate } from "uuid";
+//import { ValidationException } from "../exceptions/ValidationException.js";
 
 interface IMovieService {
   addMovieWithGenres(req: Request, res: Response): Promise<Response>;
@@ -34,6 +35,7 @@ class MovieService implements IMovieService {
         //shows the same error message if its not an array, maybe there should be another validation !Array.isArray(genreNames => create an array with the value that was sent as the first value of the array
         message: "You must provide at least one genre to create a movie.",
       });
+      //throw new ValidationException("Movie name and genre names are required.");
     }
     try {
       // create the movie first
