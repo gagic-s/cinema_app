@@ -2,6 +2,7 @@ import { UUID } from "crypto";
 import movieRepository from "../repositories/movie.repository.js";
 import { Request, Response } from "express";
 import { Genre, Movie } from "../db/index.js";
+import { validate as uuidValidate } from "uuid";
 
 interface IMovieService {
   addMovieWithGenres(req: Request, res: Response): Promise<Response>;
@@ -93,11 +94,18 @@ class MovieService implements IMovieService {
 
   async getOneMovie(req: Request, res: Response): Promise<any> {
     const id: UUID = req.params.id as UUID;
-    //URADITI VALIDACIJU
-    try {
-      const genre = await movieRepository.retrieveById(id);
+    // check if ID is a valid UUID
+    const validatedUUID = uuidValidate(id);
 
-      if (genre) res.status(200).send(genre);
+    if (!validatedUUID)
+      return res.status(500).send({
+        message: `Error retrieving Movie with id=${id}. Id has to be a valid UUID`,
+      });
+
+    try {
+      const movie = await movieRepository.retrieveById(id);
+
+      if (movie) res.status(200).send(movie);
       else
         res.status(404).send({
           message: `Cannot find Movie with id=${id}.`,
@@ -134,6 +142,14 @@ class MovieService implements IMovieService {
 
   async deleteMovie(req: Request, res: Response): Promise<any> {
     const id: UUID = req.params.id as UUID;
+
+    // check if ID is a valid UUID
+    const validatedUUID = uuidValidate(id);
+
+    if (!validatedUUID)
+      return res.status(500).send({
+        message: `Error deleting Movie with id=${id}. Id has to be a valid UUID`,
+      });
 
     try {
       const num = await movieRepository.delete(id);

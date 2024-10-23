@@ -3,6 +3,7 @@ import Genre from "../models/genre.model.js";
 import genreRepository from "../repositories/genre.repository.js";
 import { Request, Response } from "express";
 import GenreMapper from "../mappers/genre.mapper.js";
+import { validate as uuidValidate } from "uuid";
 
 interface IGenreService {
   addGenre(req: Request, res: Response): Promise<Genre>;
@@ -50,7 +51,15 @@ class GenreService implements IGenreService {
 
   async getOneGenre(req: Request, res: Response): Promise<any> {
     const id: UUID = req.params.id as UUID;
-    //URADITI VALIDACIJU
+
+    // check if ID is a valid UUID
+    const validatedUUID = uuidValidate(id);
+
+    if (!validatedUUID)
+      return res.status(500).send({
+        message: `Error retrieving Genre with id=${id}. Id has to be a valid UUID`,
+      });
+
     try {
       const genre = await genreRepository.retrieveById(id);
 
@@ -91,6 +100,14 @@ class GenreService implements IGenreService {
 
   async deleteGenre(req: Request, res: Response): Promise<any> {
     const id: UUID = req.params.id as UUID;
+
+    // check if ID is a valid UUID
+    const validatedUUID = uuidValidate(id);
+
+    if (!validatedUUID)
+      return res.status(500).send({
+        message: `Error deleting Genre with id=${id}. Id has to be a valid UUID`,
+      });
 
     try {
       const num = await genreRepository.delete(id);
