@@ -87,10 +87,13 @@ class MovieRepository implements IMovieRepository {
   }
 
   async update(movie: Movie): Promise<number> {
-    const { id, name } = movie;
+    const { id, name, originalName, duration, posterImage } = movie;
 
     try {
-      const affectedRows = await Movie.update({ name }, { where: { id: id } });
+      const affectedRows = await Movie.update(
+        { name, originalName, duration, posterImage },
+        { where: { movie_id: id } }
+      );
 
       return affectedRows[0];
     } catch (error) {
@@ -101,7 +104,7 @@ class MovieRepository implements IMovieRepository {
   async delete(movieId: UUID): Promise<number> {
     try {
       const affectedRows = await Movie.destroy({
-        where: { id: movieId },
+        where: { movie_id: movieId },
       });
 
       return affectedRows;

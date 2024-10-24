@@ -29,8 +29,15 @@ class MovieService implements IMovieService {
       genreNames: string[];
     } = req.body;
 
-    // check if genreNames is not empty and is an array
-    if (!Array.isArray(genreNames) || genreNames.length === 0) {
+    // check if genreNames is not empty and is an array and has all required fields
+    if (
+      !Array.isArray(genreNames) ||
+      genreNames.length === 0 ||
+      !name ||
+      !originalName ||
+      !posterImage ||
+      !duration
+    ) {
       return res.status(400).send({
         //shows the same error message if its not an array, maybe there should be another validation !Array.isArray(genreNames => create an array with the value that was sent as the first value of the array
         message: "You must provide at least one genre to create a movie.",

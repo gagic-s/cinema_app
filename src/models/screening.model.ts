@@ -1,5 +1,13 @@
 import { UUID } from "crypto";
-import { Model, Table, Column, DataType } from "sequelize-typescript";
+import {
+  Model,
+  Table,
+  Column,
+  DataType,
+  BelongsTo,
+  ForeignKey,
+} from "sequelize-typescript";
+import { Movie } from "../db/index.js";
 
 @Table({
   tableName: "screenings",
@@ -12,6 +20,13 @@ export default class Screening extends Model {
     defaultValue: DataType.UUIDV4,
   })
   screening_id!: UUID;
+
+  @ForeignKey(() => Movie)
+  @Column({
+    type: DataType.UUID,
+    allowNull: false,
+  })
+  movie_id!: string;
 
   @Column({
     type: DataType.DATEONLY,
@@ -47,4 +62,7 @@ export default class Screening extends Model {
     field: "screeningColumns",
   })
   screeningColumns!: number;
+
+  @BelongsTo(() => Movie)
+  movie!: Movie;
 }
