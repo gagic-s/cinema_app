@@ -98,12 +98,12 @@ class ScreeningService implements IScreeningService {
         });
       } else {
         res.send({
-          message: `Cannot update Movie with id=${screening.id}. Maybe Movie was not found or req.body is empty!`,
+          message: `Cannot update Screening with id=${screening.id}. Maybe Screening was not found or req.body is empty!`,
         });
       }
     } catch (err) {
       res.status(500).send({
-        message: `Error updating Movie with id=${screening.id}.`,
+        message: `Error updating Screening with id=${screening.id}.`,
       });
     }
   }

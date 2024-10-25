@@ -6,8 +6,9 @@ import {
   DataType,
   Unique,
   ForeignKey,
+  IsEmail,
 } from "sequelize-typescript";
-import { User } from "../db/index.js";
+import { Screening, User } from "../db/index.js";
 
 @Table({
   tableName: "reservations",
@@ -21,6 +22,13 @@ export default class Reservation extends Model {
   })
   reservation_id!: UUID;
 
+  @ForeignKey(() => Screening)
+  @Column({
+    type: DataType.UUID,
+    allowNull: false,
+  })
+  screening_id?: UUID;
+
   @Unique
   @Column({
     type: DataType.STRING,
@@ -29,6 +37,7 @@ export default class Reservation extends Model {
   })
   reservationCode!: string;
 
+  @IsEmail
   @Column({
     type: DataType.STRING,
     allowNull: false,
