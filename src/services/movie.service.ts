@@ -88,10 +88,24 @@ class MovieService implements IMovieService {
   }
 
   async getAllMovies(req: Request, res: Response): Promise<any> {
-    const name = typeof req.query.name === "string" ? req.query.name : "";
+    const { movieName, date, limit, offset } = req.query;
+    const searchParams: {
+      movieName?: string;
+      date?: string;
+      limit?: number;
+      offset?: number;
+    } = {};
+
+    // da li ima smisla da default vreme bude danas ako nije drugacije naglaseno
+    searchParams.movieName = (movieName as string) || "";
+    searchParams.date = date
+      ? (date as string)
+      : new Date().toISOString().split("T")[0];
+    searchParams.limit = limit ? parseInt(limit as string) : undefined;
+    searchParams.offset = offset ? parseInt(offset as string) : undefined;
 
     try {
-      const genres = await movieRepository.retrieveAll({ name });
+      const genres = await movieRepository.retrieveAll(searchParams);
 
       res.status(200).send(genres);
     } catch (err) {

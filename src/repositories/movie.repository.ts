@@ -1,6 +1,6 @@
 import { Op } from "sequelize";
 import { UUID } from "crypto";
-import { Genre, Movie } from "../db/index.js";
+import { Genre, Movie, Screening } from "../db/index.js";
 import { NotFoundException } from "../exceptions/NotFoundException.js";
 import { DatabaseException } from "../exceptions/DatabaseException.js";
 
@@ -17,7 +17,10 @@ interface IMovieRepository {
     duration: number;
   }): Promise<Movie>;
   addGenresToMovie(movie: Movie, genres: Genre[]): Promise<void>;
-  retrieveAll(searchParams: { name: string }): Promise<Movie[]>;
+  retrieveAll(searchParams: {
+    movieName?: string;
+    date?: string;
+  }): Promise<Movie[]>;
   retrieveById(movieId: UUID): Promise<Movie | null>;
   update(movie: Movie): Promise<number>;
   delete(movieId: UUID): Promise<number>;
@@ -61,16 +64,41 @@ class MovieRepository implements IMovieRepository {
     }
   }
 
-  async retrieveAll(searchParams: { name?: string }): Promise<Movie[]> {
+  async retrieveAll(searchParams: {
+    movieName?: string;
+    date?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<any> {
+    const condition: any = {};
+
     try {
-      let condition: SearchCondition = {};
+      if (searchParams.movieName) {
+        condition.name = { [Op.iLike]: `%${searchParams.movieName}%` };
+      }
 
-      if (searchParams?.name)
-        condition.name = { [Op.iLike]: `%${searchParams.name}%` };
+      const movies = await Movie.findAll({
+        where: condition,
+        include: [
+          {
+            model: Genre,
+            attributes: ["name"],
+          },
+          {
+            model: Screening,
+            where: searchParams.date
+              ? { screeningDate: searchParams.date }
+              : undefined,
+            attributes: ["screeningDate", "screeningTime", "ticketPrice"],
+          },
+        ],
+        limit: searchParams.limit || undefined, // Apply limit if specified
+        offset: searchParams.offset || undefined,
+      });
 
-      return await Movie.findAll({ where: condition });
-    } catch (error) {
-      throw new Error("Failed to retrieve Genre!");
+      return movies;
+    } catch (error: any) {
+      new DatabaseException(error.message);
     }
   }
 
