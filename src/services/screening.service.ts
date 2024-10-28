@@ -55,10 +55,12 @@ class ScreeningService implements IScreeningService {
   }
 
   async getAllScreenings(req: Request, res: Response): Promise<any> {
-    const name = typeof req.query.name === "string" ? req.query.name : "";
+    const date = typeof req.query.date === "string" ? req.query.date : "";
+    const genreName =
+      typeof req.query.genreName === "string" ? req.query.genreName : "";
 
     try {
-      const genres = await screeningRepository.retrieveAll({ name });
+      const genres = await screeningRepository.retrieveAll({ date, genreName });
 
       res.status(200).send(genres);
     } catch (err) {

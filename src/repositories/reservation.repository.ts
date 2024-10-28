@@ -5,7 +5,11 @@ import { Op } from "sequelize";
 import { NotFoundException } from "../exceptions/NotFoundException.js";
 
 interface IReservationRepository {
-  save(screening: Reservation, reservationCode: string): Promise<Reservation>;
+  save(
+    screening: Reservation,
+    reservationCode: string,
+    reservationUser?: string
+  ): Promise<Reservation>;
   retrieveAll(searchParams: { screening_id: string }): Promise<Reservation[]>;
   retrieveById(screeningId: UUID): Promise<Reservation>;
   update(screening: Reservation): Promise<number>;
@@ -20,6 +24,7 @@ class ReservationRepository implements IReservationRepository {
   async save(
     reservation: Reservation,
     reservationCode: string
+    // reservationUser?: string
   ): Promise<Reservation> {
     try {
       return await Reservation.create({
@@ -27,6 +32,7 @@ class ReservationRepository implements IReservationRepository {
         reservationCode: reservationCode,
         email: reservation.email,
         totalPrice: reservation.totalPrice,
+        // user_id: reservationUser || null,
       });
     } catch (error: any) {
       throw new DatabaseException(error.message);

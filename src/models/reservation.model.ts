@@ -1,4 +1,5 @@
 import { UUID } from "crypto";
+import { Screening, User } from "../db/index.js";
 import {
   Model,
   Table,
@@ -7,8 +8,8 @@ import {
   Unique,
   ForeignKey,
   IsEmail,
+  BelongsTo,
 } from "sequelize-typescript";
-import { Screening, User } from "../db/index.js";
 
 @Table({
   tableName: "reservations",
@@ -52,14 +53,14 @@ export default class Reservation extends Model {
   })
   totalPrice!: number;
 
-  @ForeignKey(() => User)
-  @Column({
-    type: DataType.UUID,
-    allowNull: true, // Allow null, so user may not exist
-  })
-  user_id?: UUID; // Change to optional
+  // @ForeignKey(() => User)
+  // @Column({
+  //   type: DataType.UUID,
+  //   allowNull: true, // Allows reservations without an associated user
+  // })
+  // userId?: string;
 
   //LAZA pitati zasto ovde ima problem sa inicijalizacijom ako dodam BelongsTo
-  //@BelongsTo(() => User)
-  //user?: User;
+  // @BelongsTo(() => User)
+  // user?: User;
 }

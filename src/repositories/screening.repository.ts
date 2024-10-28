@@ -1,12 +1,12 @@
 import { UUID } from "crypto";
-import { Screening } from "../db/index.js";
+import { Genre, Movie, Screening } from "../db/index.js";
 import { DatabaseException } from "../exceptions/DatabaseException.js";
 import { Op } from "sequelize";
 import { NotFoundException } from "../exceptions/NotFoundException.js";
 
 interface IScreeningRepository {
   save(screening: Screening): Promise<Screening>;
-  retrieveAll(searchParams: { name: string }): Promise<Screening[]>;
+  retrieveAll(searchParams: { date: string }): Promise<Screening[]>;
   retrieveById(screeningId: UUID): Promise<Screening>;
   update(screening: Screening): Promise<number>;
   delete(screeningId: UUID): Promise<number>;
@@ -32,18 +32,40 @@ class ScreeningRepository implements IScreeningRepository {
     }
   }
 
-  async retrieveAll(searchParams: { name?: string }): Promise<Screening[]> {
-    try {
-      let condition: SearchCondition = {};
+  async retrieveAll(searchParams: {
+    date?: string;
+    genreName?: string;
+  }): Promise<Screening[]> {
+    const { date, genreName } = searchParams;
 
-      if (searchParams?.name) {
-        condition.name = { [Op.iLike]: `%${searchParams.name}%` };
-      }
-
-      return await Screening.findAll({ where: condition });
-    } catch (error: any) {
-      throw new DatabaseException(error.message);
+    // Define where conditions for Screening
+    const screeningConditions: any = {};
+    if (date) {
+      screeningConditions.screeningDate = { [Op.eq]: date }; // Use Op.eq or adjust as needed for specific date format
     }
+
+    // Define include conditions for Movie and Genre
+    const includeConditions = [
+      {
+        model: Movie,
+        include: genreName
+          ? [
+              {
+                model: Genre,
+                where: {
+                  name: { [Op.iLike]: `%${genreName}%` }, // Case-insensitive partial match on genre name
+                },
+              },
+            ]
+          : [], // Include Genre only if genreName is specified
+      },
+    ];
+
+    // Perform the query
+    return await Screening.findAll({
+      where: screeningConditions,
+      include: includeConditions,
+    });
   }
 
   async retrieveById(screeningId: UUID): Promise<Screening> {

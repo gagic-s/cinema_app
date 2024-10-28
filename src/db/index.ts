@@ -5,11 +5,11 @@ import Movie from "../models/movie.model.js";
 import Screening from "../models/screening.model.js";
 import Genre from "../models/genre.model.js";
 import MovieGenre from "../models/movieGenre.model.js";
-import Reservation from "../models/reservation.model.js";
 import User from "../models/user.model.js";
+import Reservation from "../models/reservation.model.js";
 import Ticket from "../models/ticket.model.js";
 
-export { Movie, Screening, Genre, MovieGenre, Reservation, User, Ticket };
+export { Movie, Screening, Genre, MovieGenre, User, Reservation, Ticket };
 
 class Database {
   public sequelize: Sequelize | undefined;
@@ -31,7 +31,7 @@ class Database {
         acquire: config.pool.acquire,
         idle: config.pool.idle,
       },
-      models: [Movie, Screening, Genre, MovieGenre, Reservation, User, Ticket],
+      models: [Movie, Screening, Genre, MovieGenre, User, Reservation, Ticket],
     });
 
     defineAssociations();

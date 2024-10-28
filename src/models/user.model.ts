@@ -1,5 +1,14 @@
 import { UUID } from "crypto";
-import { Model, Table, Column, DataType, Unique } from "sequelize-typescript";
+
+import {
+  Model,
+  Table,
+  Column,
+  DataType,
+  Unique,
+  HasMany,
+} from "sequelize-typescript";
+import Reservation from "./reservation.model.js";
 
 @Table({
   tableName: "user",
@@ -62,4 +71,7 @@ export default class User extends Model {
     field: "isAdmin",
   })
   isAdmin!: boolean;
+
+  // @HasMany(() => Reservation)
+  // reservations?: Reservation[];
 }
