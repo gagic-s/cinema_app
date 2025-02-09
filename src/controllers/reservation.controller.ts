@@ -11,7 +11,9 @@ export default class ReservationController {
   findAll(req: Request, res: Response) {
     try {
       reservationService.getAllReservation(req, res);
-    } catch (error) {}
+    } catch (error: any) {
+      res.send(error.code).json(error.message);
+    }
   }
 
   findOne(req: Request, res: Response) {

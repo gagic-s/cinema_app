@@ -22,7 +22,7 @@ interface IReservationService {
 
 class ReservationService implements IReservationService {
   async addReservation(req: Request, res: Response): Promise<any> {
-    const { screening_id, email, totalPrice } = req.body;
+    const { screening_id, email, totalPrice, tickets } = req.body;
 
     //validate email
     const isEmailValid = isValidEmail(email);
@@ -43,9 +43,10 @@ class ReservationService implements IReservationService {
 
     try {
       const reservation: Reservation = req.body;
+      reservation.reservationCode = reservationCode;
       const savedReservation = await reservationRepository.save(
         reservation,
-        reservationCode
+        tickets
       );
       res.status(201).send(savedReservation);
     } catch (error: any) {
@@ -61,10 +62,8 @@ class ReservationService implements IReservationService {
       const genres = await reservationRepository.retrieveAll({ screening_id });
 
       res.status(200).send(genres);
-    } catch (err) {
-      res.status(500).send({
-        message: "Some error occurred while retrieving reservations.",
-      });
+    } catch (err: any) {
+      throw new DatabaseException(err.message);
     }
   }
 

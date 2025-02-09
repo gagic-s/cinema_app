@@ -1,15 +1,12 @@
 import { UUID } from "crypto";
-import { Reservation } from "../db/index.js";
+import databaseInstance, { Reservation, Ticket } from "../db/index.js";
 import { DatabaseException } from "../exceptions/DatabaseException.js";
 import { Op } from "sequelize";
 import { NotFoundException } from "../exceptions/NotFoundException.js";
+import { Sequelize } from "sequelize-typescript";
 
 interface IReservationRepository {
-  save(
-    screening: Reservation,
-    reservationCode: string,
-    reservationUser?: string
-  ): Promise<Reservation>;
+  save(reservationData: Reservation, ticketsData: any[]): Promise<any>;
   retrieveAll(searchParams: { screening_id: string }): Promise<Reservation[]>;
   retrieveById(screeningId: UUID): Promise<Reservation>;
   update(screening: Reservation): Promise<number>;
@@ -21,22 +18,47 @@ interface SearchCondition {
 }
 
 class ReservationRepository implements IReservationRepository {
-  async save(
-    reservation: Reservation,
-    reservationCode: string
-    // reservationUser?: string
-  ): Promise<Reservation> {
-    try {
-      return await Reservation.create({
-        screening_id: reservation.screening_id,
-        reservationCode: reservationCode,
-        email: reservation.email,
-        totalPrice: reservation.totalPrice,
-        // user_id: reservationUser || null,
-      });
-    } catch (error: any) {
-      throw new DatabaseException(error.message);
-    }
+  async save(reservationData: Reservation, ticketsData: any[]): Promise<any> {
+    const sequelize: Sequelize = databaseInstance.sequelize as Sequelize;
+
+    return await sequelize.transaction(async (transaction) => {
+      try {
+        // Create the reservation
+        const reservation = await Reservation.create(
+          {
+            screening_id: reservationData.screening_id,
+            reservationCode: reservationData.reservationCode,
+            email: reservationData.email,
+            totalPrice: reservationData.totalPrice,
+          },
+          {
+            transaction,
+          }
+        );
+
+        // Add reservation_id to each ticket in ticketsData
+        const ticketsWithReservationAndScreeningId = ticketsData.map(
+          (ticket) => ({
+            ...ticket,
+            reservation_id: reservation.reservation_id,
+            screening_id: reservation.screening_id,
+          })
+        );
+
+        // Create each ticket associated with the reservation
+        const tickets = await Promise.all(
+          ticketsWithReservationAndScreeningId.map((ticketData) =>
+            Ticket.create(ticketData, { transaction })
+          )
+        );
+
+        // Return the reservation and its associated tickets
+        return { reservation, tickets };
+      } catch (error: any) {
+        // Any error here will automatically trigger a rollback
+        throw new DatabaseException(error.message);
+      }
+    });
   }
 
   async retrieveAll(searchParams: {
@@ -49,7 +71,16 @@ class ReservationRepository implements IReservationRepository {
         condition.name = { [Op.iLike]: `%${searchParams.screening_id}%` };
       }
 
-      return await Reservation.findAll({ where: condition });
+      const reservations = await Reservation.findAll({
+        where: condition,
+        include: [
+          {
+            model: Ticket,
+            attributes: ["ticket_row", "ticket_column"],
+          },
+        ],
+      });
+      return reservations;
     } catch (error: any) {
       throw new DatabaseException(error.message);
     }
@@ -57,7 +88,12 @@ class ReservationRepository implements IReservationRepository {
 
   async retrieveById(reservationId: UUID): Promise<Reservation> {
     try {
-      const reservation = await Reservation.findByPk(reservationId);
+      const reservation = await Reservation.findByPk(reservationId, {
+        include: {
+          model: Ticket,
+          attributes: ["ticket_row", "ticket_column"],
+        },
+      });
       if (!reservation) {
         throw new NotFoundException("Reservation");
       }
