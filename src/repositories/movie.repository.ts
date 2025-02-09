@@ -89,7 +89,12 @@ class MovieRepository implements IMovieRepository {
             where: searchParams.date
               ? { screeningDate: searchParams.date }
               : undefined,
-            attributes: ["screeningDate", "screeningTime", "ticketPrice"],
+            attributes: [
+              "screening_id",
+              "screeningDate",
+              "screeningTime",
+              "ticketPrice",
+            ],
           },
         ],
         limit: searchParams.limit || undefined, // Apply limit if specified

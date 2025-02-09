@@ -53,10 +53,12 @@ class MovieService implements IMovieService {
         duration,
       });
 
+      //TODO zanrovi ce se birati na principu selekta, nema potrebe da se kreiraju ako ne postoje
       //create genre array
       const genres: Genre[] = [];
       for (const genreName of genreNames) {
         // find the genre by name
+        //operator Op.in ?
         let genre = await Genre.findOne({ where: { name: genreName } });
 
         // if genre doesn't exist, create it
@@ -98,16 +100,15 @@ class MovieService implements IMovieService {
 
     // da li ima smisla da default vreme bude danas ako nije drugacije naglaseno
     searchParams.movieName = (movieName as string) || "";
-    searchParams.date = date
-      ? (date as string)
-      : new Date().toISOString().split("T")[0];
+    searchParams.date = date ? (date as string) : "";
+    // : new Date().toISOString().split("T")[0];
     searchParams.limit = limit ? parseInt(limit as string) : undefined;
     searchParams.offset = offset ? parseInt(offset as string) : undefined;
 
     try {
-      const genres = await movieRepository.retrieveAll(searchParams);
+      const movies = await movieRepository.retrieveAll(searchParams);
 
-      res.status(200).send(genres);
+      res.status(200).send(movies);
     } catch (err) {
       res.status(500).send({
         message: "Some error occurred while retrieving movies.",
