@@ -21,6 +21,7 @@ class GenreService implements IGenreService {
       });
       return;
     }
+    //kotroler mora da prima genre i da vraca genre ili dto genre
 
     try {
       const genre: Genre = req.body;
@@ -37,7 +38,6 @@ class GenreService implements IGenreService {
 
   async getAllGenres(req: Request, res: Response): Promise<any> {
     const name = typeof req.query.name === "string" ? req.query.name : "";
-
     try {
       const genres = await genreRepository.retrieveAll({ name });
 
@@ -82,7 +82,7 @@ class GenreService implements IGenreService {
     try {
       const num = await genreRepository.update(genre);
 
-      if (num == 1) {
+      if (num) {
         res.send({
           message: "Genre was updated successfully.",
         });

@@ -1,12 +1,13 @@
 import { Op } from "sequelize";
 import Genre from "../models/genre.model.js";
 import { UUID } from "crypto";
+import { DatabaseException } from "../exceptions/DatabaseException.js";
 
 interface IGenreRepository {
   save(genre: Genre): Promise<Genre>;
   retrieveAll(searchParams: { name: string }): Promise<Genre[]>;
   retrieveById(genreId: UUID): Promise<Genre | null>;
-  update(genre: Genre): Promise<number>;
+  update(genre: Genre): Promise<Genre>;
   delete(genreId: UUID): Promise<number>;
 }
 
@@ -20,8 +21,8 @@ class GenreRepository implements IGenreRepository {
       return await Genre.create({
         name: genre.name,
       });
-    } catch (err) {
-      throw new Error("Failed to create Genre!");
+    } catch (error: any) {
+      throw new DatabaseException(error.message);
     }
   }
   async retrieveAll(searchParams: { name?: string }): Promise<Genre[]> {
@@ -32,28 +33,31 @@ class GenreRepository implements IGenreRepository {
         condition.name = { [Op.iLike]: `%${searchParams.name}%` };
 
       return await Genre.findAll({ where: condition });
-    } catch (error) {
-      throw new Error("Failed to retrieve Genre!");
+    } catch (error: any) {
+      throw new DatabaseException(error.message);
     }
   }
 
   async retrieveById(genreId: UUID): Promise<Genre | null> {
     try {
       return await Genre.findByPk(genreId);
-    } catch (error) {
-      throw new Error("Failed to retrieve Genres!");
+    } catch (error: any) {
+      throw new DatabaseException(error.message);
     }
   }
 
-  async update(genre: Genre): Promise<number> {
+  async update(genre: Genre): Promise<Genre> {
     const { id, name } = genre;
 
     try {
-      const affectedRows = await Genre.update({ name }, { where: { id: id } });
-
-      return affectedRows[0];
-    } catch (error) {
-      throw new Error("Failed to update Genre!");
+      const [_, updatedGenres] = await Genre.update(
+        { name },
+        { where: { id: id }, returning: true }
+      );
+      // TODO vratiti updateovan genre umesto samo potvrde da bi front imao  odmah sa cime da radi umesto da salje novi zahtev
+      return updatedGenres[0];
+    } catch (error: any) {
+      throw new DatabaseException(error.message);
     }
   }
 
@@ -64,8 +68,8 @@ class GenreRepository implements IGenreRepository {
       });
 
       return affectedRows;
-    } catch (error) {
-      throw new Error("Failed to delete Genre!");
+    } catch (error: any) {
+      throw new DatabaseException(error.message);
     }
   }
 }
