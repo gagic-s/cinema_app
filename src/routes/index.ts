@@ -4,6 +4,7 @@ import movieRoutes from "./movie.routes.js";
 import screeningRoutes from "./screening.routes.js";
 import reservationRoutes from "./reservation.routes.js";
 import userRoutes from "./user.routes.js";
+import ticketRoutes from "./ticket.routes.js";
 
 export default class Routes {
   constructor(app: Application) {
@@ -12,5 +13,6 @@ export default class Routes {
     app.use("/api/screenings", screeningRoutes);
     app.use("/api/reservations", reservationRoutes);
     app.use("/api/users", userRoutes);
+    app.use("/api/tickets", ticketRoutes);
   }
 }

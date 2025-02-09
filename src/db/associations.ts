@@ -21,15 +21,41 @@ export function defineAssociations() {
     otherKey: "movie_id",
   });
 
-  Screening.hasMany(Reservation, { foreignKey: "screening_id" });
-  Reservation.belongsTo(Screening, { foreignKey: "screening_id" });
+  Screening.hasMany(Reservation, {
+    foreignKey: "screening_id",
+    as: "reservations",
+  });
+  Reservation.belongsTo(Screening, {
+    foreignKey: "screening_id",
+    as: "screening",
+  });
 
-  // User.hasMany(Reservation, { foreignKey: "userId", as: "userReservations" });
-  // Reservation.belongsTo(User, { foreignKey: "userId", as: "user" });
+  User.hasMany(Reservation, {
+    foreignKey: "user_id",
+    as: "reservations",
+  });
+  Reservation.belongsTo(User, {
+    foreignKey: "user_id",
+    as: "user",
+  });
 
-  Screening.hasMany(Ticket, { foreignKey: "screening_id" }); // Screening has many Tickets
-  Ticket.belongsTo(Screening, { foreignKey: "screening_id" }); // Ticket belongs to Screening
+  // Ticket and Screening Associations
+  Ticket.belongsTo(Screening, {
+    foreignKey: "screening_id",
+    onDelete: "CASCADE",
+  });
+  Screening.hasMany(Ticket, {
+    foreignKey: "screening_id",
+    onDelete: "CASCADE",
+  });
 
-  Reservation.hasMany(Ticket, { foreignKey: "reservation_id" }); // Reservation has many Tickets
-  Ticket.belongsTo(Reservation, { foreignKey: "reservation_id" }); // Ticket belongs to Reservation
+  // Ticket and Reservation Associations
+  Ticket.belongsTo(Reservation, {
+    foreignKey: "reservation_id",
+    onDelete: "SET NULL",
+  });
+  Reservation.hasMany(Ticket, {
+    foreignKey: "reservation_id",
+    onDelete: "SET NULL",
+  });
 }

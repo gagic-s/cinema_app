@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { Genre, Movie, Screening } from "../db/index.js";
+import { Genre, Movie, Screening, Ticket } from "../db/index.js";
 import { DatabaseException } from "../exceptions/DatabaseException.js";
 import { Op } from "sequelize";
 import { NotFoundException } from "../exceptions/NotFoundException.js";
@@ -10,10 +10,6 @@ interface IScreeningRepository {
   retrieveById(screeningId: UUID): Promise<Screening>;
   update(screening: Screening): Promise<number>;
   delete(screeningId: UUID): Promise<number>;
-}
-
-interface SearchCondition {
-  [key: string]: any;
 }
 
 class ScreeningRepository implements IScreeningRepository {
@@ -70,7 +66,12 @@ class ScreeningRepository implements IScreeningRepository {
 
   async retrieveById(screeningId: UUID): Promise<Screening> {
     try {
-      const screening = await Screening.findByPk(screeningId);
+      const screening = await Screening.findByPk(screeningId, {
+        include: {
+          model: Ticket,
+          attributes: ["reservation_id", "ticket_row", "ticket_column"],
+        },
+      });
       if (!screening) {
         throw new NotFoundException("Screening");
       }

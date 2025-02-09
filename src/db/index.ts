@@ -9,7 +9,7 @@ import User from "../models/user.model.js";
 import Reservation from "../models/reservation.model.js";
 import Ticket from "../models/ticket.model.js";
 
-export { Movie, Screening, Genre, MovieGenre, User, Reservation, Ticket };
+export { Movie, Genre, Screening, MovieGenre, User, Reservation, Ticket };
 
 class Database {
   public sequelize: Sequelize | undefined;
@@ -47,4 +47,4 @@ class Database {
   }
 }
 
-export default Database;
+export default new Database();

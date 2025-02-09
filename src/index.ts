@@ -1,7 +1,7 @@
 import express, { Application } from "express";
-// import cors, { CorsOptions } from "cors";
+import cors from "cors";
 import Routes from "./routes/index.js";
-import Database from "./db/index.js";
+import databaseInstance from "./db/index.js";
 
 export default class Server {
   constructor(app: Application) {
@@ -13,10 +13,16 @@ export default class Server {
   private config(app: Application): void {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    app.use(cors());
+    // Logging middleware
+    app.use((req, res, next) => {
+      console.log(`Received ${req.method} request for ${req.url}`);
+      next();
+    });
   }
 
   private syncDatabase(): void {
-    const db = new Database();
-    db.sequelize?.sync();
+    // const db = new Database();
+    databaseInstance.sequelize?.sync();
   }
 }
