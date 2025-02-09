@@ -64,11 +64,10 @@ class UserService implements IUserService {
 
     try {
       const user: User = req.body;
-      console.log(user);
       const savedUser = await userRepository.save(user, isAdmin);
       res.status(201).send(savedUser);
     } catch (error: any) {
-      throw new DatabaseException(`${error.message}njaaaaaaaaa`);
+      throw new DatabaseException(`${error.message}`);
     }
   }
 
@@ -79,10 +78,8 @@ class UserService implements IUserService {
       const users = await userRepository.retrieveAll({ email });
 
       res.status(200).send(users);
-    } catch (err) {
-      res.status(500).send({
-        message: "Some error occurred while retrieving users.",
-      });
+    } catch (error: any) {
+      throw new DatabaseException(`${error.message}`);
     }
   }
 
