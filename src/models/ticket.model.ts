@@ -1,4 +1,3 @@
-// models/ticket.model.ts
 import { UUID } from "crypto";
 import {
   Model,
@@ -6,7 +5,6 @@ import {
   Column,
   ForeignKey,
   DataType,
-  BelongsTo,
 } from "sequelize-typescript";
 import { Screening } from "../db/index.js"; // Import for type checking
 import { Reservation } from "../db/index.js"; // Import for type checking
@@ -20,7 +18,6 @@ export default class Ticket extends Model {
     type: DataType.UUID,
     allowNull: false,
     primaryKey: true, // Part of composite primary key
-    field: "screening_id",
   })
   screening_id!: UUID;
 
@@ -28,17 +25,15 @@ export default class Ticket extends Model {
     type: DataType.INTEGER,
     allowNull: false,
     primaryKey: true, // Part of composite primary key
-    field: "screening_rows",
   })
-  screening_rows!: number;
+  ticket_row!: number;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
     primaryKey: true, // Part of composite primary key
-    field: "screening_columns",
   })
-  screening_columns!: number;
+  ticket_column!: number;
 
   @ForeignKey(() => Reservation)
   @Column({
@@ -46,10 +41,4 @@ export default class Ticket extends Model {
     allowNull: false,
   })
   reservation_id!: UUID;
-
-  @BelongsTo(() => Screening)
-  screening!: Screening; // This defines the relationship to Screening
-
-  @BelongsTo(() => Reservation)
-  reservation!: Reservation; // This defines the relationship to Reservation
 }
