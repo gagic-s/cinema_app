@@ -25,6 +25,9 @@ class Database {
       password: config.PASSWORD,
       host: config.HOST,
       dialect: dialect,
+      logging: (msg) => {
+        if (msg.toLowerCase().includes("error")) console.log(msg);
+      },
       pool: {
         max: config.pool.max,
         min: config.pool.min,

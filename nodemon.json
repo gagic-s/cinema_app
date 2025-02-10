@@ -1,4 +1,5 @@
 {
+  "quiet": true,
   "watch": ["src"],
   "ext": "ts",
   "ignore": ["dist"],
