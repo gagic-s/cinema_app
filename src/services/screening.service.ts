@@ -7,6 +7,7 @@ import movieRepository from "../repositories/movie.repository.js";
 import { NotFoundException } from "../exceptions/NotFoundException.js";
 import { UUID } from "crypto";
 import { validate as uuidValidate } from "uuid";
+import screeningMapper from "../mappers/screening.mapper.js";
 
 interface IScreeningService {
   addScreening(req: Request, res: Response): Promise<any>;
@@ -80,8 +81,11 @@ class ScreeningService implements IScreeningService {
     try {
       const screening = await screeningRepository.retrieveById(id);
 
-      if (screening) res.status(200).send(screening);
-      else throw new NotFoundException("Screening");
+      if (screening) {
+        const screeningResponse =
+          screeningMapper.toRetrieveScreeningResponse(screening);
+        res.status(200).send(screeningResponse);
+      } else throw new NotFoundException("Screening");
     } catch (err: any) {
       throw new DatabaseException(err.message);
     }

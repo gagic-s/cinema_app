@@ -67,10 +67,16 @@ class ScreeningRepository implements IScreeningRepository {
   async retrieveById(screeningId: UUID): Promise<Screening> {
     try {
       const screening = await Screening.findByPk(screeningId, {
-        include: {
-          model: Ticket,
-          attributes: ["reservation_id", "ticket_row", "ticket_column"],
-        },
+        include: [
+          {
+            model: Ticket,
+            attributes: ["reservation_id", "ticket_row", "ticket_column"],
+          },
+          {
+            model: Movie,
+            attributes: ["name", "posterImage", "duration"],
+          },
+        ],
       });
       if (!screening) {
         throw new NotFoundException("Screening");
