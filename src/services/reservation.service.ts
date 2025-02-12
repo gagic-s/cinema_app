@@ -11,6 +11,8 @@ import {
 import { DatabaseException } from "../exceptions/DatabaseException.js";
 import { UUID } from "crypto";
 import { validate as uuidValidate } from "uuid";
+import CreateReservationRequest from "../dto/reservations/createReservation.dto.js";
+import reservationMapper from "../mappers/reservation.mapper.js";
 
 interface IReservationService {
   addReservation(req: Request, res: Response): Promise<any>;
@@ -22,7 +24,7 @@ interface IReservationService {
 
 class ReservationService implements IReservationService {
   async addReservation(req: Request, res: Response): Promise<any> {
-    const { screening_id, email, totalPrice, tickets } = req.body;
+    const { screening_id, email, totalPrice, ticketsData } = req.body;
 
     //validate email
     const isEmailValid = isValidEmail(email);
@@ -42,12 +44,11 @@ class ReservationService implements IReservationService {
     }
 
     try {
-      const reservation: Reservation = req.body;
+      const reservation: CreateReservationRequest = req.body;
       reservation.reservationCode = reservationCode;
-      const savedReservation = await reservationRepository.save(
-        reservation,
-        tickets
-      );
+      reservation.ticketsData = ticketsData;
+      const savedReservation = await reservationRepository.save(reservation);
+
       res.status(201).send(savedReservation);
     } catch (error: any) {
       throw new DatabaseException(error.message);

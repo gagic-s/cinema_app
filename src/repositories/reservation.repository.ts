@@ -4,9 +4,10 @@ import { DatabaseException } from "../exceptions/DatabaseException.js";
 import { Op } from "sequelize";
 import { NotFoundException } from "../exceptions/NotFoundException.js";
 import { Sequelize } from "sequelize-typescript";
+import CreateReservationRequest from "../dto/reservations/createReservation.dto.js";
 
 interface IReservationRepository {
-  save(reservationData: Reservation, ticketsData: any[]): Promise<any>;
+  save(reservationData: CreateReservationRequest): Promise<any>;
   retrieveAll(searchParams: { screening_id: string }): Promise<Reservation[]>;
   retrieveById(screeningId: UUID): Promise<Reservation>;
   update(screening: Reservation): Promise<number>;
@@ -18,7 +19,7 @@ interface SearchCondition {
 }
 
 class ReservationRepository implements IReservationRepository {
-  async save(reservationData: Reservation, ticketsData: any[]): Promise<any> {
+  async save(reservationData: CreateReservationRequest): Promise<any> {
     const sequelize: Sequelize = databaseInstance.sequelize as Sequelize;
 
     return await sequelize.transaction(async (transaction) => {
@@ -37,13 +38,13 @@ class ReservationRepository implements IReservationRepository {
         );
 
         // Add reservation_id to each ticket in ticketsData
-        const ticketsWithReservationAndScreeningId = ticketsData.map(
-          (ticket) => ({
-            ...ticket,
+        const ticketsWithReservationAndScreeningId =
+          reservationData.ticketsData.map((ticket) => ({
+            ticket_row: +ticket.ticket_row,
+            ticket_column: +ticket.ticket_column,
             reservation_id: reservation.reservation_id,
             screening_id: reservation.screening_id,
-          })
-        );
+          }));
 
         // Create each ticket associated with the reservation
         const tickets = await Promise.all(
