@@ -26,11 +26,18 @@ class ReservationService implements IReservationService {
   async addReservation(req: Request, res: Response): Promise<any> {
     const { screening_id, email, totalPrice, ticketsData } = req.body;
 
+    console.log(req.body);
     //validate email
     const isEmailValid = isValidEmail(email);
 
     // Validate required fields
-    if (!screening_id || !email || !totalPrice || !isEmailValid) {
+    if (
+      !screening_id ||
+      !email ||
+      !totalPrice ||
+      !isEmailValid ||
+      !ticketsData.length
+    ) {
       throw new ValidationException("Missing required reservation fields.");
     }
 

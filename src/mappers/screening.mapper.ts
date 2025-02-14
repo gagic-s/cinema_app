@@ -14,7 +14,7 @@ const mapMovieInfoForScreening = (
 };
 const formatTickets = (tickets: any) => {
   return tickets.map(
-    (ticket: any) => `${ticket.ticket_column}-${ticket.ticket_row}`
+    (ticket: any) => `${ticket.ticket_row}-${ticket.ticket_column}`
   );
 };
 
