@@ -7,7 +7,7 @@ export class ScreeningMovie {
   posterImage?: string;
 }
 export default class RetrieveScreeningResponse {
-  id!: UUID;
+  screening_id!: UUID;
   screeningDate?: string;
   screeningTime?: string;
   ticketPrice?: string;

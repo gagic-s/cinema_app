@@ -21,7 +21,7 @@ const formatTickets = (tickets: any) => {
 class ScreeningMapper {
   toRetrieveScreeningResponse(screening: any): RetrieveScreeningResponse {
     return {
-      id: screening.screening_id,
+      screening_id: screening.screening_id,
       screeningDate: screening.screeningDate,
       screeningTime: screening.screeningTime,
       ticketPrice: screening.ticketPrice,

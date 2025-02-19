@@ -1,5 +1,6 @@
 import express, { Application } from "express";
 import Server from "./index.js";
+import { setupSwagger } from "./config/swagger.js";
 
 const app: Application = express();
 const server: Server = new Server(app);
@@ -16,3 +17,5 @@ app
       console.log(err);
     }
   });
+
+setupSwagger(app); // Add Swagger
