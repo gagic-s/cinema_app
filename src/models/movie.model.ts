@@ -35,6 +35,13 @@ export default class Movie extends Model {
   posterImage!: string;
 
   @Column({
+    type: DataType.STRING(100),
+    field: "posterPublicId",
+    allowNull: false,
+  })
+  posterPublicId!: string;
+
+  @Column({
     type: DataType.INTEGER,
     field: "duration",
     allowNull: false,

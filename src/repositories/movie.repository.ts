@@ -3,19 +3,12 @@ import { UUID } from "crypto";
 import { Genre, Movie, Screening } from "../db/index.js";
 import { NotFoundException } from "../exceptions/NotFoundException.js";
 import { DatabaseException } from "../exceptions/DatabaseException.js";
+import cloudinary from "../config/cloudinary.js";
+import streamifier from "streamifier";
+import { UploadApiResponse } from "cloudinary";
 
 interface IMovieRepository {
-  save({
-    name,
-    originalName,
-    posterImage,
-    duration,
-  }: {
-    name: string;
-    originalName: string;
-    posterImage: string;
-    duration: number;
-  }): Promise<Movie>;
+  save(createParams: CreateMovieParams): Promise<Movie>;
   addGenresToMovie(movie: Movie, genres: Genre[]): Promise<void>;
   retrieveAll(searchParams: {
     movieName?: string;
@@ -26,31 +19,74 @@ interface IMovieRepository {
   delete(movieId: UUID): Promise<number>;
 }
 
+interface CreateMovieParams {
+  name: string;
+  originalName: string;
+  posterImage: Express.Multer.File;
+  duration: number;
+}
+
 interface SearchCondition {
   [key: string]: any;
 }
 
+const uploadImageToCloudinary = async (createParams: any) => {
+  let uploadResult: UploadApiResponse | undefined;
+
+  try {
+    const uploadResult = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: "movie_posters", // Cloudinary folder for movie posters
+          resource_type: "image", // Image type for upload
+        },
+        (error, result) => {
+          if (error) {
+            reject(new Error(`Cloudinary upload failed: ${error.message}`));
+          } else if (result) {
+            resolve(result);
+          } else {
+            reject(new Error("Cloudinary upload returned no result"));
+          }
+        }
+      );
+
+      // Convert buffer to readable stream
+      streamifier
+        .createReadStream(createParams.posterImage.buffer) // Assuming posterImage is a buffer
+        .pipe(uploadStream)
+        .on("error", (err) =>
+          reject(new Error(`Stream error: ${err.message}`))
+        );
+    });
+
+    return uploadResult; // Return the result of the upload
+  } catch (error: any) {
+    throw new Error(`Image upload failed: ${error.message}`);
+  }
+};
+
 class MovieRepository implements IMovieRepository {
-  async save({
-    name,
-    originalName,
-    posterImage,
-    duration,
-  }: {
-    name: string;
-    originalName: string;
-    posterImage: string;
-    duration: number;
-  }): Promise<Movie> {
+  async save(createParams: CreateMovieParams): Promise<Movie> {
     try {
+      // Validate input
+      if (!createParams.posterImage?.buffer) {
+        throw new Error("No poster image provided");
+      }
+
+      // Upload to Cloudinary using promise interface
+      const result: any = await uploadImageToCloudinary(createParams);
+      console.log("Upload success:", result);
+
       return await Movie.create({
-        name: name,
-        originalName: originalName,
-        posterImage: posterImage,
-        duration: duration,
+        name: createParams.name,
+        originalName: createParams.originalName,
+        posterImage: result.secure_url,
+        posterPublicId: result.public_id,
+        duration: createParams.duration,
       });
-    } catch (err) {
-      throw new Error("Failed to create Movie!");
+    } catch (err: any) {
+      throw new Error(`Failed to create movie: ${err.message}`);
     }
   }
 

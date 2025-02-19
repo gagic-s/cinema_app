@@ -16,62 +16,76 @@ interface IMovieService {
 
 class MovieService implements IMovieService {
   async addMovieWithGenres(req: Request, res: Response): Promise<Response> {
-    const { name, originalName, posterImage, duration, genreNames } =
-      req.body as {
-        name: string;
-        originalName: string;
-        posterImage: string;
-        duration: number;
-        genreNames: string[];
-      };
+    const { name, originalName, duration, genreNames } = req.body as {
+      name: string;
+      originalName: string;
+      duration: number;
+      genreNames: string[];
+    };
 
-    // check if genreNames is not empty and is an array and has all required fields
+    const posterImage = req.file;
+
     try {
-      if (
-        !name ||
-        !originalName ||
-        !posterImage ||
-        !duration ||
-        !Array.isArray(genreNames) ||
-        genreNames.length === 0
-      ) {
+      if (!name) {
         return res.status(400).json({
-          message:
-            "You must provide at least one genre and all required fields.",
+          message: "You must provide name.",
         });
       }
 
+      if (!originalName) {
+        return res.status(400).json({
+          message: "You must provide original name.",
+        });
+      }
+
+      if (!duration) {
+        return res.status(400).json({
+          message: "You must provide duration.",
+        });
+      }
+
+      if (!Array.isArray(genreNames)) {
+        return res.status(400).json({
+          message: "You must provide at least one genre .",
+        });
+      }
+
+      if (!posterImage) {
+        return res.status(400).json({
+          message: "You must provide poster image.",
+        });
+      }
       // create the movie first
       const movie = await movieRepository.save({
         name,
         originalName,
-        posterImage,
         duration,
+        posterImage,
       });
 
       //TODO: zanrovi ce se birati na principu selekta, nema potrebe da se kreiraju ako ne postoje
       //create genre array
-      const genres: Genre[] = [];
-      for (const genreName of genreNames) {
-        // find the genre by name
-        //operator Op.in ?
-        let genre = await Genre.findOne({ where: { name: genreName } });
+      // const genres: Genre[] = [];
+      // for (const genreName of genreNames) {
+      //   // find the genre by name
+      //   //operator Op.in ?
+      //   let genre = await Genre.findOne({ where: { name: genreName } });
 
-        // if genre doesn't exist, create it
-        if (!genre) {
-          genre = await Genre.create({ name: genreName });
-        }
-        // push genre to genres array
-        genres.push(genre);
-      }
-      // associate the genres with the movie
-      await movieRepository.addGenresToMovie(movie, genres);
+      //   // if genre doesn't exist, create it
+      //   if (!genre) {
+      //     genre = await Genre.create({ name: genreName });
+      //   }
+      //   // push genre to genres array
+      //   genres.push(genre);
+      // }
+      // // associate the genres with the movie
+      // await movieRepository.addGenresToMovie(movie, genres);
 
       //return movie
       return res.status(201).json(movie);
-    } catch (err) {
+    } catch (err: any) {
       return res.status(500).json({
-        message: "Some error occurred while retrieving movies.",
+        message: err.message,
       });
     }
   }
