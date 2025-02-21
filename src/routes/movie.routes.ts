@@ -1,6 +1,9 @@
 import { Router } from "express";
 import MovieController from "../controllers/movie.controller.js";
 import multer from "multer";
+import  authMiddleware from "../middleware/authMiddleware.js";
+import adminMiddleware from "../middleware/adminMiddleware.js";
+ 
 
 // Multer setup for memory storage (to upload directly to Cloudinary)
 const storage = multer.memoryStorage(); // Store file in memory, not on the filesystem
@@ -89,7 +92,8 @@ class MovieRoutes {
      *       500:
      *         description: Internal server error
      */
-    this.router.post("/", upload.single("poster"), this.controller.create);
+    this.router.post("/",authMiddleware, adminMiddleware,  upload.single("poster"), this.controller.create);
+
     /**
      * @swagger
      * /movies:

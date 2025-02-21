@@ -19,10 +19,10 @@ export default class Server {
       console.log(`Received ${req.method} request for ${req.url}`);
       next();
     });
+  
   }
 
   private syncDatabase(): void {
-    // const db = new Database();
     databaseInstance.sequelize?.sync();
   }
 }

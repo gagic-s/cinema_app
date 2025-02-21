@@ -2,9 +2,10 @@ import { Request, Response } from "express";
 import userService from "../services/user.service.js";
 
 export default class UserController {
+
   create(req: Request, res: Response) {
     try {
-      userService.addUser(req, res);
+      userService.createUser(req, res);
     } catch (error: any) {
       res.sendStatus(error.status).json(error.message);
     }

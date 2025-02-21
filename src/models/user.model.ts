@@ -1,11 +1,17 @@
 import { UUID } from "crypto";
+import bcrypt from "bcryptjs";
 
-import { Model, Table, Column, DataType, Unique } from "sequelize-typescript";
+import { Model, Table, Column, DataType, Unique, BeforeCreate, BeforeUpdate, IsEmail } from "sequelize-typescript";
 
 @Table({
   tableName: "user",
 })
 export default class User extends Model {
+  @BeforeCreate
+  @BeforeUpdate
+  static async hashPassword(user: User) {
+    user.password = await bcrypt.hash(user.password, 10);
+  }
   @Column({
     type: DataType.UUID,
     primaryKey: true,
@@ -37,12 +43,17 @@ export default class User extends Model {
 
   @Unique
   @Column({
-    type: DataType.STRING,
+    type: DataType.STRING(20),
     allowNull: false,
+    validate: {
+      len: [4, 20],
+    },
     field: "username",
   })
   username!: string;
 
+  @Unique
+  @IsEmail
   @Column({
     type: DataType.STRING,
     allowNull: false,

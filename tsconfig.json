@@ -11,5 +11,5 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*"] // Include all files under the src directory
+  "include": ["src/**/*", "src/custom.d.ts"] // Include all files under the src directory
 }

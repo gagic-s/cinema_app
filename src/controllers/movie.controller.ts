@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import MovieService from "../services/movie.service.js";
 
 export default class MovieController {

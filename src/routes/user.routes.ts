@@ -1,5 +1,6 @@
 import { Router } from "express";
 import UserController from "../controllers/user.controller.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 class UserRoutes {
   router = Router();
@@ -11,7 +12,7 @@ class UserRoutes {
 
   initializeRoutes() {
     // Create a new User
-    this.router.post("/", this.controller.create);
+    this.router.post("/", authMiddleware, this.controller.create);
     // Retrieve all User
     this.router.get("/", this.controller.findAll);
     // Retrieve a single User with id

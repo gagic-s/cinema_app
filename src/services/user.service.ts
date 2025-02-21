@@ -9,7 +9,7 @@ import { validate as uuidValidate } from "uuid";
 import userRepository from "../repositories/user.repository.js";
 
 interface IUserService {
-  addUser(req: Request, res: Response): Promise<any>;
+  createUser(req: Request, res: Response): Promise<any>;
   getAllUsers(req: Request, res: Response): Promise<any[]>;
   getOneUser(req: Request, res: Response): Promise<any>;
   updateUser(req: Request, res: Response): Promise<any>;
@@ -17,8 +17,9 @@ interface IUserService {
 }
 
 class UserService implements IUserService {
-  async addUser(req: Request, res: Response): Promise<any> {
-    const { firstName, lastName, dob, username, email, password } = req.body;
+  async createUser(req: Request, res: Response): Promise<any> {
+
+    const { firstName, lastName, dob, username, email, password, isAdmin } = req.body;
 
     //validate email
     const isEmailValid = isValidEmail(email);
@@ -48,16 +49,14 @@ class UserService implements IUserService {
       throw new ValidationException("Missing email.");
     }
 
-    //check if user is admin
-    const isAdmin = false;
 
     const search = { email: email, username: username };
 
     // Check if the user email exists
     const user = await userRepository.retrieveAll(search);
-    user.forEach((element) => {
-      console.log(element);
-    });
+    // user.forEach((element) => {
+    //   console.log(element);
+    // });
     if (user.length) {
       throw new ValidationException("User email or username not valid");
     }
@@ -87,6 +86,9 @@ class UserService implements IUserService {
     const id: UUID = req.params.id as UUID;
     // check if ID is a valid UUID
     const validatedUUID = uuidValidate(id);
+
+  
+  
 
     if (!validatedUUID) throw new ValidationException("User");
 

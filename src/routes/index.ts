@@ -5,6 +5,8 @@ import screeningRoutes from "./screening.routes.js";
 import reservationRoutes from "./reservation.routes.js";
 import userRoutes from "./user.routes.js";
 import ticketRoutes from "./ticket.routes.js";
+import authRoutes from "./auth.routes.js";
+
 
 export default class Routes {
   constructor(app: Application) {
@@ -14,5 +16,6 @@ export default class Routes {
     app.use("/api/reservations", reservationRoutes);
     app.use("/api/users", userRoutes);
     app.use("/api/tickets", ticketRoutes);
+    app.use("/api/auth", authRoutes);
   }
 }
