@@ -39,7 +39,6 @@ export function defineAssociations() {
     as: "user",
   });
 
-  // Ticket and Screening Associations
   Ticket.belongsTo(Screening, {
     foreignKey: "screening_id",
     onDelete: "CASCADE",
@@ -49,7 +48,6 @@ export function defineAssociations() {
     onDelete: "CASCADE",
   });
 
-  // Ticket and Reservation Associations
   Ticket.belongsTo(Reservation, {
     foreignKey: "reservation_id",
     onDelete: "SET NULL",

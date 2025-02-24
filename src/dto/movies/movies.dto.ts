@@ -11,7 +11,7 @@ export class Screening {
   ticketPrice!: string;
 }
 
-export class RetrieveMovieResponse {
+export class MovieResponse {
   createdAt!: string;
   duration!: string;
   movie_id!: UUID;

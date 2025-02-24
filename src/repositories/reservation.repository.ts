@@ -4,7 +4,7 @@ import { DatabaseException } from "../exceptions/DatabaseException.js";
 import { Op } from "sequelize";
 import { NotFoundException } from "../exceptions/NotFoundException.js";
 import { Sequelize } from "sequelize-typescript";
-import CreateReservationRequest from "../dto/reservations/createReservation.dto.js";
+import CreateReservationRequest from "../dto/reservations/reservation.dto.js";
 
 interface IReservationRepository {
   save(reservationData: CreateReservationRequest): Promise<any>;

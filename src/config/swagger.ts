@@ -12,7 +12,7 @@ const swaggerOptions = {
     },
     components: {
       schemas: {
-        RetrieveMovieResponse: {
+        MovieResponse: {
           type: "object",
           properties: {
             createdAt: { type: "string", format: "date-time" },

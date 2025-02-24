@@ -18,4 +18,4 @@ app
     }
   });
 
-setupSwagger(app); // Add Swagger
+setupSwagger(app);

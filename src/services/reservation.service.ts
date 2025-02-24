@@ -11,7 +11,7 @@ import {
 import { DatabaseException } from "../exceptions/DatabaseException.js";
 import { UUID } from "crypto";
 import { validate as uuidValidate } from "uuid";
-import CreateReservationRequest from "../dto/reservations/createReservation.dto.js";
+import CreateReservationRequest from "../dto/reservations/reservation.dto.js";
 import reservationMapper from "../mappers/reservation.mapper.js";
 
 interface IReservationService {

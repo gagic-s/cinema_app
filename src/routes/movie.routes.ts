@@ -132,7 +132,7 @@ class MovieRoutes {
      *             schema:
      *               type: array
      *               items:
-     *                 $ref: '#/components/schemas/RetrieveMovieResponse'
+     *                 $ref: '#/components/schemas/MovieResponse'
      *       500:
      *         description: Internal Server Error
      */

@@ -5,13 +5,13 @@ export interface AuthenticatedUser {
   isAdmin: boolean;
 }
 const adminMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-  console.log(req.user);
-  if (!req.user || !req.body.isAdmin) {
+  const user = req.user as AuthenticatedUser;
+  if (!user.isAdmin) {
     res.status(403).json({ message: "Access Denied: Admins only" });
     return;
   }
 
-  next(); // ✅ Ensure it only calls next() and doesn't return a response
+  next();
 };
 
 export default adminMiddleware;

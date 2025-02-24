@@ -1,10 +1,9 @@
 import { UUID } from "crypto";
 import movieRepository from "../repositories/movie.repository.js";
 import { Request, Response } from "express";
-import { Genre, Movie } from "../db/index.js";
+import { Movie } from "../db/index.js";
 import { validate as uuidValidate } from "uuid";
 import MovieMapper from "../mappers/movie.mapper.js";
-//import { ValidationException } from "../exceptions/ValidationException.js";
 
 interface IMovieService {
   addMovieWithGenres(req: Request, res: Response): Promise<Response>;
@@ -105,7 +104,7 @@ class MovieService implements IMovieService {
       };
 
       const movies = await movieRepository.retrieveAll(searchParams);
-      res.status(200).json(movies.map(MovieMapper.toRetrieveMovieResponse));
+      res.status(200).json(movies.map(MovieMapper.toMovieResponse));
     } catch (error) {
       res
         .status(500)
@@ -115,7 +114,7 @@ class MovieService implements IMovieService {
 
   async getOneMovie(req: Request, res: Response): Promise<any> {
     const id: UUID = req.params.id as UUID;
-    // check if ID is a valid UUID
+
     if (!uuidValidate(id)) {
       return res.status(400).json({ message: `Invalid UUID: ${id}` });
     }
@@ -158,7 +157,6 @@ class MovieService implements IMovieService {
   async deleteMovie(req: Request, res: Response): Promise<any> {
     const id: UUID = req.params.id as UUID;
 
-    // check if ID is a valid UUID
     if (!uuidValidate(id)) {
       return res.status(400).json({ message: `Invalid UUID: ${id}` });
     }

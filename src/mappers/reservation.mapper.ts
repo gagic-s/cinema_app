@@ -3,7 +3,7 @@ import { Reservation } from "../db";
 import {
   CreateReservationResponse,
   ReservationTicket,
-} from "../dto/reservations/createReservation.dto";
+} from "../dto/reservations/reservation.dto";
 
 class ReservationMapper {
   toCreateReservationResponse(

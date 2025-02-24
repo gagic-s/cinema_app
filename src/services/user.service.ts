@@ -42,7 +42,7 @@ class UserService implements IUserService {
     }
 
     if (!password) {
-      throw new ValidationException("Missing pasword.");
+      throw new ValidationException("Missing password.");
     }
 
     if (!isEmailValid) {

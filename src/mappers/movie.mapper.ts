@@ -1,4 +1,4 @@
-import { RetrieveMovieResponse } from "../dto/movies/retrieveAllMoviesResponse";
+import { MovieResponse } from "../dto/movies/movies.dto";
 
 const sortScreenings = (screenings: any[]) =>
   screenings.sort(
@@ -12,7 +12,7 @@ const mapGenreNamesToArrayOfStrings = (genres: any) => {
 };
 
 class MovieMapper {
-  toRetrieveMovieResponse(movie: any): RetrieveMovieResponse {
+  toMovieResponse(movie: any): MovieResponse {
     return {
       movie_id: movie.movie_id,
       name: movie.name,
