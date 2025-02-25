@@ -1,9 +1,10 @@
 import { UUID } from "crypto";
 import movieRepository from "../repositories/movie.repository.js";
 import { Request, Response } from "express";
-import { Movie } from "../db/index.js";
+import { Genre, Movie } from "../db/index.js";
 import { validate as uuidValidate } from "uuid";
 import MovieMapper from "../mappers/movie.mapper.js";
+import genreRepository from "../repositories/genre.repository.js";
 
 interface IMovieService {
   addMovieWithGenres(req: Request, res: Response): Promise<Response>;
@@ -62,23 +63,14 @@ class MovieService implements IMovieService {
         posterImage,
       });
 
-      //TODO: zanrovi ce se birati na principu selekta, nema potrebe da se kreiraju ako ne postoje
-      //create genre array
-      // const genres: Genre[] = [];
-      // for (const genreName of genreNames) {
-      //   // find the genre by name
-      //   //operator Op.in ?
-      //   let genre = await Genre.findOne({ where: { name: genreName } });
-
-      //   // if genre doesn't exist, create it
-      //   if (!genre) {
-      //     genre = await Genre.create({ name: genreName });
-      //   }
-      //   // push genre to genres array
-      //   genres.push(genre);
-      // }
-      // // associate the genres with the movie
-      // await movieRepository.addGenresToMovie(movie, genres);
+      // create genre array
+      const genres: Genre[] = [];
+      for (const genreName of genreNames) {
+        let genre = await genreRepository.retrieveAll({ name: genreName });
+        genres.push(genre[0]);
+      }
+      // associate the genres with the movie
+      await movieRepository.addGenresToMovie(movie, genres);
 
       //return movie
       return res.status(201).json(movie);

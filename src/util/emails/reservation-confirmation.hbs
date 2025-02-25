@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservation Confirmation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      padding: 20px;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #d32f2f;
+      text-align: center;
+    }
+    .content {
+      line-height: 1.6;
+    }
+    .highlight {
+      font-weight: bold;
+      color: #d32f2f;
+    }
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.9em;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <h2>🎟️ Reservation Confirmation 🎟️</h2>
+    
+    <p>Dear <strong>{{name}}</strong>,</p>
+
+    <p class="content">
+      Your reservation for the movie <strong class="highlight">{{movieName}}</strong> has been successfully confirmed! 🎬  
+    </p>
+
+    <p class="content">
+      <strong>📌 Confirmation Code:</strong> <span class="highlight">{{reservationCode}}</span>
+    </p>
+
+    <p class="content">
+      <strong>💰 Total Price:</strong> <span class="highlight">{{totalPrice}} RSD</span>
+    </p>
+
+    <p class="content">
+      <strong>📅 Show Date:</strong> {{date}} <br>
+      <strong>⏰ Time:</strong> {{time}} <br>
+      <p><strong>🎭 Seats:</strong></p>
+<ul>
+  {{#each seats}}
+    <li>Row: <strong>{{ticket_row}}</strong>, Seat: <strong>{{ticket_column}}</strong></li>
+  {{/each}}
+</ul>
+    </p>
+
+    <p class="content">
+      Thank you for choosing our cinema! We look forward to seeing you. 🍿  
+    </p>
+
+    <div class="footer">
+      <p>🎬 Cinema App Team</p>
+    </div>
+  </div>
+</body>
+</html>

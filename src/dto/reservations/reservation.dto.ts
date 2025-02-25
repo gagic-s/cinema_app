@@ -9,7 +9,7 @@ export default class CreateReservationRequest {
   screening_id!: UUID;
   email!: string;
   totalPrice!: number;
-  reservationCode!: string;
+  reservationCode?: string;
   ticketsData!: ReservationTicket[];
 }
 

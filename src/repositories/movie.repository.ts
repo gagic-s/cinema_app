@@ -1,11 +1,12 @@
-import { Op } from "sequelize";
-import { UUID } from "crypto";
-import { Genre, Movie, Screening } from "../db/index.js";
-import { NotFoundException } from "../exceptions/NotFoundException.js";
-import { DatabaseException } from "../exceptions/DatabaseException.js";
-import cloudinary from "../config/cloudinary.js";
-import streamifier from "streamifier";
 import { UploadApiResponse } from "cloudinary";
+import { UUID } from "crypto";
+import { Op } from "sequelize";
+import streamifier from "streamifier";
+import cloudinary from "../config/cloudinary.js";
+import { Genre, Movie, Screening } from "../db/index.js";
+import { DatabaseException } from "../exceptions/DatabaseException.js";
+import { NotFoundException } from "../exceptions/NotFoundException.js";
+import { ValidationException } from "../exceptions/ValidationException.js";
 
 interface IMovieRepository {
   save(createParams: CreateMovieParams): Promise<Movie>;
@@ -37,8 +38,8 @@ const uploadImageToCloudinary = async (createParams: any) => {
     const uploadResult = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          folder: "movie_posters", // Cloudinary folder for movie posters
-          resource_type: "image", // Image type for upload
+          folder: "movie_posters",
+          resource_type: "image", 
         },
         (error, result) => {
           if (error) {
@@ -53,30 +54,27 @@ const uploadImageToCloudinary = async (createParams: any) => {
 
       // Convert buffer to readable stream
       streamifier
-        .createReadStream(createParams.posterImage.buffer) // Assuming posterImage is a buffer
+        .createReadStream(createParams.posterImage.buffer)
         .pipe(uploadStream)
         .on("error", (err) =>
           reject(new Error(`Stream error: ${err.message}`))
         );
     });
 
-    return uploadResult; // Return the result of the upload
+    return uploadResult;
   } catch (error: any) {
-    throw new Error(`Image upload failed: ${error.message}`);
+    throw new DatabaseException(`Image upload failed: ${error.message}`);
   }
 };
 
 class MovieRepository implements IMovieRepository {
   async save(createParams: CreateMovieParams): Promise<Movie> {
     try {
-      // Validate input
       if (!createParams.posterImage?.buffer) {
-        throw new Error("No poster image provided");
+        throw new ValidationException("No poster image provided");
       }
 
-      // Upload to Cloudinary using promise interface
       const result: any = await uploadImageToCloudinary(createParams);
-      console.log("Upload success:", result);
 
       return await Movie.create({
         name: createParams.name,
@@ -86,17 +84,15 @@ class MovieRepository implements IMovieRepository {
         duration: createParams.duration,
       });
     } catch (err: any) {
-      throw new Error(`Failed to create movie: ${err.message}`);
+      throw new DatabaseException(`Failed to create movie: ${err.message}`);
     }
   }
 
   async addGenresToMovie(movie: Movie, genres: Genre[]): Promise<void> {
     try {
-      // add the association in the movieGenres table
-      // if I put movie.addGenres it shows addGenres doesn't exist on Movie WHY?
       return await (movie as any).addGenres(genres);
     } catch (error) {
-      throw new Error("Failed to add Genres!");
+      throw new DatabaseException("Failed to add Genres!");
     }
   }
 
@@ -166,7 +162,7 @@ class MovieRepository implements IMovieRepository {
 
       return affectedRows[0];
     } catch (error) {
-      throw new Error("Failed to update Genre!");
+      throw new DatabaseException("Failed to update Genre!");
     }
   }
 
@@ -178,7 +174,7 @@ class MovieRepository implements IMovieRepository {
 
       return affectedRows;
     } catch (error) {
-      throw new Error("Failed to delete Genre!");
+      throw new DatabaseException("Failed to delete Genre!");
     }
   }
 }

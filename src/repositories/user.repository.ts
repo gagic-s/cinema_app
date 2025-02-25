@@ -27,7 +27,6 @@ class UserRepository implements IUserRepository {
         email: user.email,
         password: user.password,
         isAdmin: isAdmin,
-        // reservations: user.reservations,
       });
     } catch (error: any) {
       throw new DatabaseException(error.message);

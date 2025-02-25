@@ -5,7 +5,7 @@ class GenreMapper {
   toGenreDTO(genre: Genre): GenreDTO {
     return {
       id: genre.genre_id!,
-      name: `${genre.name!} DTO`,
+      name: genre.name!,
     };
   }
 

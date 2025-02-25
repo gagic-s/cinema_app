@@ -10,15 +10,20 @@ import userRepository from "../repositories/user.repository.js";
 export default class AuthController {
   async register(req: Request, res: Response): Promise<void> {
   try {
+    
     const { firstName, lastName, dob, username, email, password, isAdmin } = req.body;
-console.log(req.body)
 
-if(req.body.id) {
-  const existingUser: User = await userService.getOneUser(req,res);
-  if (existingUser) {
-   res.status(400).json({ message: "Email already exists" });
-  }
+    if (!firstName || !lastName || !dob || !username || !email || !password) {
+      res.status(400).json({ message: "All fields are required" });
+      return;
+    }
 
+    if(req.body.id) {
+    const existingUser: User = await userService.getOneUser(req,res);
+
+    if (existingUser) {
+    res.status(400).json({ message: "Email already exists" });
+    return;}
 }
 
     const newUser = await User.create({
@@ -31,35 +36,40 @@ if(req.body.id) {
       isAdmin: isAdmin || false,
     });
 
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json(newUser);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 };
 async login(req: Request, res: Response): Promise<void> {
-  console.log("body" ,req.body)
+
+  if (!req.body.email || !req.body.password) {
+    res.status(400).json({ message: "Email and password are required" });
+  }
+
   try {
     const {  password } = req.body;
 
     const userResponse = await userRepository.retrieveAll({ email: req.body.email });
     const user = userResponse[0];
 
-    if (!user)  res.status(400).json({ message: "Invalid email or password" });
+    if (!user) {
+      res.status(400).json({ message: "Invalid email" }); return;
+    } 
    
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)  res.status(400).json({ message: "Invalid email or password" });
+    if (!isMatch) {
+      res.status(400).json({ message: "Invalid password" }); return
+    } 
 
     const token = jwt.sign(
       { userId: user.user_id, isAdmin: user.isAdmin },
       process.env.JWT_SECRET!,
       { expiresIn: "1h" }
     );
-
-    console.log('token', token) 
     
-    res.json({token,  user: { id: user.user_id, email: user.email, isAdmin: user.isAdmin } });
+    res.json({token,  user: { id: user.user_id, name: user.firstName.concat(` ${user.lastName}`) , email: user.email, dob: user.dob, isAdmin: user.isAdmin } });
   } catch (error) {
-    console.error(error); // Log the error for debugging
     res.status(500).json({ message: "Server error" });
   }
 };

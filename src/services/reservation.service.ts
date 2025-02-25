@@ -12,7 +12,9 @@ import { DatabaseException } from "../exceptions/DatabaseException.js";
 import { UUID } from "crypto";
 import { validate as uuidValidate } from "uuid";
 import CreateReservationRequest from "../dto/reservations/reservation.dto.js";
-import reservationMapper from "../mappers/reservation.mapper.js";
+import sendEmail from "../util/emailService.js";
+import userRepository from "../repositories/user.repository.js";
+
 
 interface IReservationService {
   addReservation(req: Request, res: Response): Promise<any>;
@@ -23,14 +25,10 @@ interface IReservationService {
 }
 
 class ReservationService implements IReservationService {
-  async addReservation(req: Request, res: Response): Promise<any> {
+  async addReservation (req: Request, res: Response): Promise<any> {
     const { screening_id, email, totalPrice, ticketsData } = req.body;
 
-    console.log(req.body);
-    //validate email
     const isEmailValid = isValidEmail(email);
-
-    // Validate required fields
     if (
       !screening_id ||
       !email ||
@@ -54,7 +52,22 @@ class ReservationService implements IReservationService {
       const reservation: CreateReservationRequest = req.body;
       reservation.reservationCode = reservationCode;
       reservation.ticketsData = ticketsData;
+
       const savedReservation = await reservationRepository.save(reservation);
+
+      const userResponse = await userRepository.retrieveAll({ email: req.body.email });
+      const user = userResponse[0];
+
+      // Send confirmation email with Handlebars template
+      await sendEmail(email, "Your Cinema Reservation Confirmation", "reservation-confirmation", {
+      name: user.firstName + " " + user.lastName,
+      movieName: screening.movie.name,
+      date: screening.screeningDate,
+      time: screening.screeningTime,
+      reservationCode,
+      totalPrice,
+      seats: ticketsData,
+    });
 
       res.status(201).send(savedReservation);
     } catch (error: any) {
@@ -77,7 +90,7 @@ class ReservationService implements IReservationService {
 
   async getOneReservation(req: Request, res: Response): Promise<any> {
     const id: UUID = req.params.id as UUID;
-    // check if ID is a valid UUID
+
     const validatedUUID = uuidValidate(id);
 
     if (!validatedUUID) throw new ValidationException("Reservation");
@@ -133,10 +146,8 @@ class ReservationService implements IReservationService {
       } else {
         throw new NotFoundException("Reservation");
       }
-    } catch (err) {
-      res.status(500).send({
-        message: `Could not delete Reservation with id==${id}.`,
-      });
+    } catch (err: any) {
+      throw new DatabaseException(`Could not delete Reservation with id==${id} because of ${err.message}.`);
     }
   }
 }
