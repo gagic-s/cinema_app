@@ -1,11 +1,12 @@
 import { Application } from "express";
-import genresRoutes from "./genre.routes.js";
-import movieRoutes from "./movie.routes.js";
-import screeningRoutes from "./screening.routes.js";
-import reservationRoutes from "./reservation.routes.js";
-import userRoutes from "./user.routes.js";
-import ticketRoutes from "./ticket.routes.js";
-import authRoutes from "./auth.routes.js";
+import authRoutes from "../app/auth/auth.routes.js";
+import genresRoutes from "../app/genres/genre.routes.js";
+import movieRoutes from "../app/movies/movie.routes.js";
+import reservationRoutes from "../app/reservations/reservation.routes.js";
+import screeningRoutes from "../app/screenings/screening.routes.js";
+import ticketRoutes from "../app/tickets/ticket.routes.js";
+import userRoutes from "../app/users/user.routes.js";
+
 
 
 export default class Routes {

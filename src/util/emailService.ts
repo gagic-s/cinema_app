@@ -5,6 +5,10 @@ import hbs from "nodemailer-express-handlebars";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import dotenv from "dotenv";
+
+dotenv.config();
+
 // Get the directory name in ES module scope
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,10 +17,13 @@ const __dirname = path.dirname(__filename);
 const { compile } = handlebars;
 // Configure the email transporter
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: "gmail",  // You can also use 'smtp.gmail.com' if not using the "service" option.
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: process.env.EMAIL_USER,  // Ensure this is the correct email address
+    pass: process.env.EMAIL_PASS,  // Ensure this is the correct password or App password
+  },
+  tls: {
+    rejectUnauthorized: false, // Optional: Sometimes necessary for local dev environments
   },
 });
 

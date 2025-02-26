@@ -71,6 +71,13 @@ export default class User extends Model {
   @Column({
     type: DataType.BOOLEAN,
     defaultValue: false,
+    field: "isVerified",
+  })
+  isVerified!: boolean;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
     field: "isAdmin",
   })
   isAdmin!: boolean;
